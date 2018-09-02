@@ -2,8 +2,8 @@
 
 Stitch raster maps from OSM tiles.
 
-Please be careful about your data usage and don't overload OSM tileservers:
-https://operations.osmfoundation.org/policies/tiles/
+Please be careful about your data usage and don't overload the OSM tileservers.
+See the OSM tile policies: https://operations.osmfoundation.org/policies/tiles/
 
 ## Synopsis
 
