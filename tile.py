@@ -22,9 +22,9 @@ def deg2num(lat_deg, lon_deg, zoom):
 def div_roundup(x, y):
     return (x + y-1) // y
 
-def load_tile(x, y, z):
+def load_tile(dirname_cache, x, y, z):
     log.debug('loading tile %s', (x, y, z))
-    fname = f'cache/{z}/{x}/{y}.png'
+    fname = os.path.join(dirname_cache, f'{z}/{x}/{y}.png')
 
     if not os.path.exists(fname):
         os.makedirs(os.path.dirname(fname), exist_ok=True)
@@ -44,7 +44,7 @@ def main(args):
     result = Image.new('RGB', (width, height))
     for dx in range(-x_halfspan, x_halfspan + 1):
         for dy in range(-y_halfspan, y_halfspan + 1):
-            tile = load_tile(x_centre + dx, y_centre + dy, args.zoom)
+            tile = load_tile(args.dirname_cache, x_centre + dx, y_centre + dy, args.zoom)
             result.paste(tile, (dx*TILE_SIZE - TILE_SIZE//2 + width//2, dy*TILE_SIZE - TILE_SIZE//2 + height//2))
 
     result.save(args.fname_out)
@@ -55,6 +55,6 @@ if __name__ == '__main__':
     ap.add_argument('lon', type=float)
     ap.add_argument('-z', '--zoom', type=int, default=13)
     ap.add_argument('-s', '--size', default='2048x2048')
-    ap.add_argument('-c', '--cache', default='cache/')
+    ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/')
     ap.add_argument('-o', dest='fname_out', default='map.png')
     main(ap.parse_args())
