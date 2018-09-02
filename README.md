@@ -13,15 +13,16 @@ usage: osmstitch.py [-h] [-z ZOOM] [-s SIZE] [-c DIRNAME_CACHE] [-o FNAME_OUT]
                     lat lon
 
 positional arguments:
-  lat
-  lon
+  lat                   latitude of the centre (deg)
+  lon                   longitude of the centre (deg)
 
 optional arguments:
   -h, --help            show this help message and exit
-  -z ZOOM, --zoom ZOOM
-  -s SIZE, --size SIZE
+  -z ZOOM, --zoom ZOOM  zoom [13]
+  -s SIZE, --size SIZE  size of output image [2048x2048]
   -c DIRNAME_CACHE, --cache DIRNAME_CACHE
-  -o FNAME_OUT
+                        cache directory [cache/]
+  -o FNAME_OUT          output filename [map.png]
 ```
 
 ## License

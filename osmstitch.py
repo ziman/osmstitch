@@ -51,10 +51,10 @@ def main(args):
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('lat', type=float)
-    ap.add_argument('lon', type=float)
-    ap.add_argument('-z', '--zoom', type=int, default=13)
-    ap.add_argument('-s', '--size', default='2048x2048')
-    ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/')
-    ap.add_argument('-o', dest='fname_out', default='map.png')
+    ap.add_argument('lat', type=float, help='latitude of the centre (deg)')
+    ap.add_argument('lon', type=float, help='longitude of the centre (deg)')
+    ap.add_argument('-z', '--zoom', type=int, default=13, help='zoom [%(default)s]')
+    ap.add_argument('-s', '--size', default='2048x2048', help='size of output image [%(default)s]')
+    ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/', help='cache directory [%(default)s]')
+    ap.add_argument('-o', dest='fname_out', default='map.png', help='output filename [%(default)s]')
     main(ap.parse_args())
