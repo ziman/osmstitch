@@ -45,7 +45,7 @@ def main(args):
     for dx in range(-x_halfspan, x_halfspan + 1):
         for dy in range(-y_halfspan, y_halfspan + 1):
             tile = load_tile(x_centre + dx, y_centre + dy, args.zoom)
-            result.paste(tile, (dx*TILE_SIZE - TILE_SIZE//2, dy*TILE_SIZE - TILE_SIZE//2))
+            result.paste(tile, (dx*TILE_SIZE - TILE_SIZE//2 + width//2, dy*TILE_SIZE - TILE_SIZE//2 + height//2))
 
     result.save(args.fname_out)
 
