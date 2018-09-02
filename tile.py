@@ -24,6 +24,15 @@ def div_roundup(x, y):
 
 def load_tile(x, y, z):
     log.debug('loading tile %s', (x, y, z))
+    fname = f'cache/{z}/{x}/{y}.png'
+
+    if not os.path.exists(fname):
+        os.makedirs(os.path.dirname(fname), exist_ok=True)
+        resp = requests.get(f'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png')
+        with open(fname, 'wb') as f:
+            f.write(resp.content)
+
+    return Image.open(fname)
 
 def main(args):
     x_centre, y_centre = deg2num(args.lat, args.lon, args.zoom)
@@ -33,9 +42,12 @@ def main(args):
     y_halfspan = div_roundup(height//2 - TILE_SIZE//2, TILE_SIZE)
 
     result = Image.new('RGB', (width, height))
-    for x in range(x_centre - x_halfspan, x_centre + x_halfspan + 1):
-        for y in range(y_centre - y_halfspan, y_centre + y_halfspan + 1):
-            tile = load_tile(x, y, args.zoom)
+    for dx in range(-x_halfspan, x_halfspan + 1):
+        for dy in range(-y_halfspan, y_halfspan + 1):
+            tile = load_tile(x_centre + dx, y_centre + dy, args.zoom)
+            result.paste(tile, (dx*TILE_SIZE - TILE_SIZE//2, dy*TILE_SIZE - TILE_SIZE//2))
+
+    result.save(args.fname_out)
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
@@ -44,4 +56,5 @@ if __name__ == '__main__':
     ap.add_argument('-z', '--zoom', type=int, default=13)
     ap.add_argument('-s', '--size', default='2048x2048')
     ap.add_argument('-c', '--cache', default='cache/')
+    ap.add_argument('-o', dest='fname_out', default='map.png')
     main(ap.parse_args())
