@@ -62,8 +62,10 @@ def main(args):
             rank=int(match.group(1)),
             orientation=match.group(2),
         )
+        page_size = 'a%s' % match.group(1)
     else:
         width, height = tuple(map(int, args.size.split('x')))
+        page_size = None
 
     x_halfspan = div_roundup(width//2 - TILE_SIZE//2, TILE_SIZE)
     y_halfspan = div_roundup(height//2 - TILE_SIZE//2, TILE_SIZE)
@@ -76,11 +78,11 @@ def main(args):
 
     result.save(args.fname_out)
 
-    if args.size in ('a4',):
+    if page_size:
         subprocess.check_call([
             'convert', args.fname_out,
-            '-rotate', '90',
-            '-page', str(args.size),
+            '-rotate', '90' if width > height else '0',
+            '-page', page_size,
             '-density', str(args.ppi),
             args.fname_out + '.pdf'
         ])
@@ -90,8 +92,8 @@ if __name__ == '__main__':
     ap.add_argument('lat', type=float, help='latitude of the centre (deg)')
     ap.add_argument('lon', type=float, help='longitude of the centre (deg)')
     ap.add_argument('-z', '--zoom', type=int, default=13, help='zoom [%(default)s]')
-    ap.add_argument('-s', '--size', default='2048x2048',
-        help='size of output image [%(default)s], or: (a4|a5|...)-(portrait|landscape)"')
+    ap.add_argument('-s', '--size', default='a4-landscape',
+        help='size of output image [%(default)s], WxH (px) or: aN-(portrait|landscape)"')
     ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/', help='cache directory [%(default)s]')
     ap.add_argument('-o', dest='fname_out', default='map.png', help='output filename [%(default)s]')
     ap.add_argument('-p', '--ppi', default=150, type=int, help='pixels per inch [%(default)s]')
