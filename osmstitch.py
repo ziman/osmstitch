@@ -5,6 +5,7 @@ import math
 import logging
 import argparse
 import requests
+import subprocess
 from PIL import Image
 
 TILE_SIZE = 256
@@ -36,7 +37,12 @@ def load_tile(dirname_cache, x, y, z):
 
 def main(args):
     x_centre, y_centre = deg2num(args.lat, args.lon, args.zoom)
-    width, height = tuple(map(int, args.size.split('x')))
+
+    if args.size == 'a4':
+        width  = 3508 * args.dpi // 300
+        height = 2480 * args.dpi // 300
+    else:
+        width, height = tuple(map(int, args.size.split('x')))
 
     x_halfspan = div_roundup(width//2 - TILE_SIZE//2, TILE_SIZE)
     y_halfspan = div_roundup(height//2 - TILE_SIZE//2, TILE_SIZE)
@@ -49,12 +55,22 @@ def main(args):
 
     result.save(args.fname_out)
 
+    if args.size in ('a4',):
+        subprocess.check_call([
+            'convert', args.fname_out,
+            '-rotate', '90',
+            '-page', args.size,
+            '-density', args.dpi,
+            args.fname_out + '.pdf'
+        ])
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
     ap.add_argument('lat', type=float, help='latitude of the centre (deg)')
     ap.add_argument('lon', type=float, help='longitude of the centre (deg)')
     ap.add_argument('-z', '--zoom', type=int, default=13, help='zoom [%(default)s]')
-    ap.add_argument('-s', '--size', default='2048x2048', help='size of output image [%(default)s]')
+    ap.add_argument('-s', '--size', default='2048x2048', help='size of output image [%(default)s], or "a4"')
     ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/', help='cache directory [%(default)s]')
     ap.add_argument('-o', dest='fname_out', default='map.png', help='output filename [%(default)s]')
+    ap.add_argument('-d', '--dpi', default=300, type=int, help='DPI [%(default)s]')
     main(ap.parse_args())
