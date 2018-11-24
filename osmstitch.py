@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import math
 import logging
 import argparse
@@ -9,6 +10,10 @@ import subprocess
 from PIL import Image
 
 TILE_SIZE = 256
+
+PAPER_SIZE = {
+    'a4': (210, 297),
+}
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -35,12 +40,28 @@ def load_tile(dirname_cache, x, y, z):
 
     return Image.open(fname)
 
+def paper_size(ppi, rank, orientation):
+    factor  = 2**(rank/2)
+    longer  = round(ppi * 46.77 / factor)
+    shorter = round(ppi * 33.07 / factor)
+
+    if orientation == 'landscape':
+        return longer, shorter
+    elif orientation == 'portrait':
+        return shorter, longer
+    else:
+        raise Exception('unknown page orientation: %s' % orientation)
+
 def main(args):
     x_centre, y_centre = deg2num(args.lat, args.lon, args.zoom)
 
-    if args.size == 'a4':
-        width  = 3508 * args.dpi // 300
-        height = 2480 * args.dpi // 300
+    match = re.match('a(\d)-(portrait|landscape)', args.size)
+    if match:
+        width, height = paper_size(
+            ppi=args.ppi,
+            rank=int(match.group(1)),
+            orientation=match.group(2),
+        )
     else:
         width, height = tuple(map(int, args.size.split('x')))
 
@@ -59,8 +80,8 @@ def main(args):
         subprocess.check_call([
             'convert', args.fname_out,
             '-rotate', '90',
-            '-page', args.size,
-            '-density', args.dpi,
+            '-page', str(args.size),
+            '-density', str(args.ppi),
             args.fname_out + '.pdf'
         ])
 
@@ -69,8 +90,9 @@ if __name__ == '__main__':
     ap.add_argument('lat', type=float, help='latitude of the centre (deg)')
     ap.add_argument('lon', type=float, help='longitude of the centre (deg)')
     ap.add_argument('-z', '--zoom', type=int, default=13, help='zoom [%(default)s]')
-    ap.add_argument('-s', '--size', default='2048x2048', help='size of output image [%(default)s], or "a4"')
+    ap.add_argument('-s', '--size', default='2048x2048',
+        help='size of output image [%(default)s], or: (a4|a5|...)-(portrait|landscape)"')
     ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/', help='cache directory [%(default)s]')
     ap.add_argument('-o', dest='fname_out', default='map.png', help='output filename [%(default)s]')
-    ap.add_argument('-d', '--dpi', default=300, type=int, help='DPI [%(default)s]')
+    ap.add_argument('-p', '--ppi', default=150, type=int, help='pixels per inch [%(default)s]')
     main(ap.parse_args())
