@@ -34,7 +34,10 @@ def load_tile(dirname_cache, x, y, z):
 
     if not os.path.exists(fname):
         os.makedirs(os.path.dirname(fname), exist_ok=True)
-        resp = requests.get(f'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png')
+        resp = requests.get(
+            f'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            headers={'User-Agent': 'https://github.com/ziman/osmstitch'}
+        )
         with open(fname, 'wb') as f:
             f.write(resp.content)
 
