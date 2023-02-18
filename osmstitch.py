@@ -16,6 +16,11 @@ PAPER_SIZE = {
     'a4': (210, 297),
 }
 
+TILE_URLS = {
+    'osm': 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    'google-satellite': 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+}
+
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
@@ -77,6 +82,8 @@ def main(args):
     x_halfspan = div_roundup(width//2 - TILE_SIZE//2, TILE_SIZE)
     y_halfspan = div_roundup(height//2 - TILE_SIZE//2, TILE_SIZE)
 
+    url_template = TILE_URLS.get(args.url_template, args.url_template)
+
     http = requests.Session()
     result = Image.new('RGB', (width, height))
     for dx in range(-x_halfspan, x_halfspan + 1):
@@ -105,6 +112,6 @@ if __name__ == '__main__':
     ap.add_argument('-c', '--cache', dest='dirname_cache', default='cache/', help='cache directory [%(default)s]')
     ap.add_argument('-o', dest='fname_out', default='map.png', help='output filename [%(default)s]')
     ap.add_argument('-p', '--ppi', default=150, type=int, help='pixels per inch [%(default)s]')
-    ap.add_argument('-u', '--url-template', default='https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    ap.add_argument('-u', '--url-template', default='osm',
         help='tile url template [%(default)s]')
     main(ap.parse_args())
