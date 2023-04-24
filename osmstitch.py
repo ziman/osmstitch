@@ -3,9 +3,9 @@
 import os
 import re
 import math
+import httpx
 import logging
 import argparse
-import requests
 import subprocess
 import urllib.parse
 from PIL import Image
@@ -86,7 +86,7 @@ def main(args):
 
     url_template = TILE_URLS.get(args.url_template, args.url_template)
 
-    http = requests.Session()
+    http = httpx.Client()
     result = Image.new('RGB', (width, height))
     for dx in range(-x_halfspan, x_halfspan + 1):
         for dy in range(-y_halfspan, y_halfspan + 1):
