@@ -20,6 +20,7 @@ TILE_URLS = {
     'osm': 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
     'google-satellite': 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
     'freemap.sk': 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}.png',
+    'opentopomap': 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
 }
 
 logging.basicConfig(level=logging.DEBUG)
