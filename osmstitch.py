@@ -19,6 +19,7 @@ PAPER_SIZE = {
 TILE_URLS = {
     'osm': 'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
     'google-satellite': 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    'freemap.sk': 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}.png',
 }
 
 logging.basicConfig(level=logging.DEBUG)
@@ -88,7 +89,7 @@ def main(args):
     result = Image.new('RGB', (width, height))
     for dx in range(-x_halfspan, x_halfspan + 1):
         for dy in range(-y_halfspan, y_halfspan + 1):
-            tile = load_tile(http, args.dirname_cache, args.url_template, x_centre + dx, y_centre + dy, args.zoom)
+            tile = load_tile(http, args.dirname_cache, url_template, x_centre + dx, y_centre + dy, args.zoom)
             result.paste(tile, (dx*TILE_SIZE - TILE_SIZE//2 + width//2, dy*TILE_SIZE - TILE_SIZE//2 + height//2))
 
     result.save(args.fname_out)
