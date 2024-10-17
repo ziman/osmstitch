@@ -69,7 +69,7 @@ def paper_size(ppi, rank, orientation):
 def main(args):
     x_centre, y_centre = deg2num(args.lat, args.lon, args.zoom)
 
-    match = re.match('a(\d)-(portrait|landscape)', args.size)
+    match = re.match(r'a(\d)-(portrait|landscape)', args.size)
     if match:
         width, height = paper_size(
             ppi=args.ppi,
