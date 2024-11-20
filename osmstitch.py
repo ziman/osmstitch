@@ -2,6 +2,7 @@
 
 import os
 import re
+import tqdm
 import math
 import httpx
 import logging
@@ -88,7 +89,7 @@ def main(args):
 
     http = httpx.Client()
     result = Image.new('RGB', (width, height))
-    for dx in range(-x_halfspan, x_halfspan + 1):
+    for dx in tqdm.tqdm(range(-x_halfspan, x_halfspan + 1), total=2*x_halfspan+1):
         for dy in range(-y_halfspan, y_halfspan + 1):
             tile = load_tile(http, args.dirname_cache, url_template, x_centre + dx, y_centre + dy, args.zoom)
             result.paste(tile, (dx*TILE_SIZE - TILE_SIZE//2 + width//2, dy*TILE_SIZE - TILE_SIZE//2 + height//2))
