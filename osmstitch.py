@@ -24,15 +24,14 @@ TILE_URLS = {
     'opentopomap': 'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
 }
 
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 def deg2num(lat_deg, lon_deg, zoom):
-  lat_rad = math.radians(lat_deg)
-  n = 2.0 ** zoom
-  xtile = int((lon_deg + 180.0) / 360.0 * n)
-  ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
-  return (xtile, ytile)
+    lat_rad = math.radians(lat_deg)
+    n = 2.0 ** zoom
+    xtile = int((lon_deg + 180.0) / 360.0 * n)
+    ytile = int((1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n)
+    return (xtile, ytile)
 
 def div_roundup(x, y):
     return (x + y-1) // y
@@ -68,6 +67,7 @@ def paper_size(ppi, rank, orientation):
         raise Exception('unknown page orientation: %s' % orientation)
 
 def main(args):
+    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARN)
     x_centre, y_centre = deg2num(args.lat, args.lon, args.zoom)
 
     match = re.match(r'a(\d)-(portrait|landscape)', args.size)
@@ -117,4 +117,5 @@ if __name__ == '__main__':
     ap.add_argument('-p', '--ppi', default=150, type=int, help='pixels per inch [%(default)s]')
     ap.add_argument('-u', '--url-template', default='osm',
         help='tile url template [%(default)s]')
+    ap.add_argument('-v', '--verbose', action='store_true')
     main(ap.parse_args())
