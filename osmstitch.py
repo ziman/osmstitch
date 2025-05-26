@@ -87,7 +87,7 @@ def main(args):
 
     url_template = TILE_URLS.get(args.url_template, args.url_template)
 
-    http = httpx.Client()
+    http = httpx.Client(timeout=httpx.Timeout(timeout=args.timeout_sec))
     result = Image.new('RGB', (width, height))
     for dx in tqdm.tqdm(range(-x_halfspan, x_halfspan + 1), total=2*x_halfspan+1):
         for dy in range(-y_halfspan, y_halfspan + 1):
@@ -118,4 +118,5 @@ if __name__ == '__main__':
     ap.add_argument('-u', '--url-template', default='osm',
         help='tile url template [%(default)s]')
     ap.add_argument('-v', '--verbose', action='store_true')
+    ap.add_argument('-t', '--timeout-sec', default=15, help='per-tile timeout in seconds [%(default)s]')
     main(ap.parse_args())
